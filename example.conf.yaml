@@ -1,0 +1,12 @@
+# Comments
+
+production:
+    database:
+        rw: mysql://pazien:NowLikIt@db.pazien.com:3350/pazien # read-write
+        ro: mysql://pazien:NowLikIt@db.pazien.com:3350/pazien # read-only
+
+development:
+    database:
+        rw: mysql://pazien:NowLikIt@localhost:3350/pazien # read-write
+        ro: mysql://pazien:NowLikIt@localhost:3350/pazien # read-only
+
