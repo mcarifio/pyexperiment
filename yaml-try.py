@@ -17,10 +17,12 @@ if '__main__' == __name__:
     !config.Configuration
     production:
         !config.Database
-        { read_write: "mysql://username@password:host/database", read_only: "mysql://username@password:host/database" }
+        read_write: "mysql://username@password:host/database1"
+        read_only: "mysql://username@password:host/database1"
+
     development:
         !config.Database
-        { read_write: "mysql://username@password:host:999/database "}
+        read_write: "mysql://username@password:host:999/database"
     """)
 
     print(config)

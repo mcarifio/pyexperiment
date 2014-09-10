@@ -33,11 +33,12 @@ if '__main__' == __name__:
 
     try:
         pathname = 'example.conf.yaml'
-        config = read_conf_yaml(pathname=pathname)
+        a = read_conf_yaml(pathname=pathname)
+        config = config.Configuration().populate(a)
     except FileNotFoundError as e:
         logger.exception(e)
 
 
-    print(config.production.database.rw)
+    print(config.production.database.read_write)
 
     logger.info('exit with status %d', 0)

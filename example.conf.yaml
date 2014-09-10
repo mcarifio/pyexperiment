@@ -1,12 +1,14 @@
 # Comments
 
 production:
+    title: "Used in production"
     database:
-        rw: mysql://pazien:NowLikIt@db.pazien.com:3350/pazien # read-write
-        ro: mysql://pazien:NowLikIt@db.pazien.com:3350/pazien # read-only
+        read_write: mysql://pazien:NowLikIt@db.pazien.com:3350/pazien # read-write
+        read_only: mysql://pazien:NowLikIt@db.pazien.com:3350/pazien # read-only
 
 development:
+    title: "Used in development"
     database:
-        rw: mysql://pazien:NowLikIt@localhost:3350/pazien # read-write
-        ro: mysql://pazien:NowLikIt@localhost:3350/pazien # read-only
+        read_write: mysql://pazien:NowLikIt@localhost:3350/pazien # read-write
+        read_only: mysql://pazien:NowLikIt@localhost:3350/pazien # read-only
 
