@@ -5,6 +5,7 @@ config module, one per executable
 import os
 import sys
 import yaml
+import attrdict
 
 
 class Database(yaml.YAMLObject):
@@ -13,6 +14,8 @@ class Database(yaml.YAMLObject):
         self.read_write = os.environ.get("MYSQL_READ_WRITE") or read_write or 'mysql://carif:pass@localhost'
         self.read_only = os.environ.get("MYSQL_READ_ONLY") or read_only or 'mysql://carif:pass@localhost' or self.read_write
 
+    def make(self, a: attrdict)->Database:
+        self.__init__(read_write=a.database.read_write)
 
     def throw(self, exception):
         raise exception
@@ -34,6 +37,8 @@ class Configuration(yaml.YAMLObject):
     def __init__(self, production=None, development=None):
         self.production = os.environ.get('PRODUCTION') or production or Database(dict(read_write='mysql://db.host.com/database'))
         self.development = os.environ.get('DEVELOPMENT') or development or self.production
+
+    def make(self, attr):
 
 
     def __repr__(self, *args, **kwargs):

@@ -14,6 +14,8 @@ logger.setLevel(logging.DEBUG)
 import yaml
 import attrdict
 
+import config
+
 def name_from(pathname):
     if pathname:
         return os.path.join(os.path.dirname(pathname), os.path.basename(os.path.splitext(pathname)[0]), '.conf.yaml')
