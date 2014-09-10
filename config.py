@@ -105,6 +105,26 @@ class Configuration(yaml.YAMLObject):
         return self
 
 
+    # Treat a Configuration as a dictionary like object.
+    def __getitem__(self, item):
+        """
+        Usage: c = config.Configuration(...); c['production'] => Dictionary
+        :param item:
+        :type: str
+        :return: database object with name item, relies of properties to get it right.
+        :rtype: Database
+        """
+        return self.__getattribute__(item)
+
+    def __iter__(self):
+        """
+        Usage: c['name'] => Database. Assumes all property names start with '_' (which is brittle).
+        :return:
+        """
+        for k in self.__dict__.keys():
+            yield k[1:]
+        raise StopIteration()
+
     # pyyaml says we need this.
     def __repr__(self, *args, **kwargs):
          return "%s(production=%r, development=%r)" % (

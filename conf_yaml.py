@@ -34,11 +34,23 @@ if '__main__' == __name__:
     try:
         pathname = 'example.conf.yaml'
         a = read_conf_yaml(pathname=pathname)
-        config = config.Configuration().populate(a)
+        c = config.Configuration().populate(a)
     except FileNotFoundError as e:
         logger.exception(e)
 
 
-    print(config.production.database.read_write)
+    # use the stuff
+
+    print(c.production.database.read_write)
+
+    # the "top" level attributes in the Configuration are considered its "keys", i.e. 'production' and 'development'
+    # TODO: pycharm completes these names?
+    for k in c:
+        print(k, c[k].database, c[k].database.read_write)
+
+    # and finally
+    env = os.environ.get("APP_ENV", "development")
+    print(c[env].database.read_write)
+
 
     logger.info('exit with status %d', 0)

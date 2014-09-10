@@ -20,7 +20,6 @@ if '__main__' == __name__:
         title: "Production"
         read_write: "mysql://username@password:host/database1"
         read_only: "mysql://username@password:host/database1"
-
     development:
         !config.Database
         title: "Development"
