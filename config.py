@@ -8,6 +8,27 @@ import yaml
 import attrdict
 
 
+
+def name_from(pathname, extension='.conf.yaml'):
+    """Generate a yaml configuration pathname from a pathname. So '/some/path/foo.py' => '/some/path/foo.conf.yaml"""
+    if pathname:
+        return os.path.join(os.path.dirname(pathname), os.path.basename(os.path.splitext(pathname)[0]), extension)
+    else:
+        raise ValueError("Expecting pathname, received None.")
+
+def attrdict_from_yaml_file(pathname=None, called_from=None):
+    """
+    Slurp an attrdict.AttrDict from a file pathname. For convenience, read_conf_yaml(called_from=__filename__) should work.
+    """
+    yaml_file = pathname or name_from(called_from)
+    with open(yaml_file) as fstream:
+        return yaml.load(fstream)
+
+def attrdict_from_yaml_string(s):
+    """Convenience for testing."""
+    return yaml.load(s)
+
+
 class Database(yaml.YAMLObject):
     """
     Database represents a pair of database connection strings in SQLAlchemy format, i.e. 'mysql://username:password@hostname/database'.
@@ -70,39 +91,42 @@ class Database(yaml.YAMLObject):
 
 
 
-class Configuration(yaml.YAMLObject):
+class Configurations(yaml.YAMLObject):
     """
     Configuration represents an application configuration. It can be parsed directly in pyyaml with the appropriate configuration directives,
     e.g. !config.Configuration or it can be constructed from an attrdict.AttrDict. See conf_yaml.py for example usage.
     """
 
-    def __init__(self, production=None, development=None, **kwargs):
+    def __init__(self, contents):
         """
         Usage: c = config.Configuration(production=config.Database(...))
         :param production:
         :param development:
         :return:
         """
-        self._initialize(production, development)
+        self._initialize(contents)
 
-    def _initialize(self, production, development):
+    def _initialize(self, contents):
         """
         Internal method to initialize an instance's contents. Call constructors get here.
         :param production:
         :param development:
         :return:
         """
-        self._production = os.environ.get('PRODUCTION') or production or Database(read_write='mysql://user:pass@db.host.com/database')
-        self._development = os.environ.get('DEVELOPMENT') or development or self.production
+        self.contents = attrdict.AttrDict(contents)
+        for k,v in self.contents.items():
+            override = os.environ.get(k.upper())
+            if override:
+                self.contents[k] = override
+            elif isinstance(v, dict):
+                self.contents[k] =  attrdict.AttrDict(v)
+            self.__setattr__(k, self.contents[k])
 
-    def populate(self, a: attrdict):
-        """
-        Usage: c = config.Configuration().populate(a:attr.AttrDict). Populates a Configuration from an attribute dictionary (with right attributes).
-        :param a:
-        :return:
-        """
-        self._initialize(a.production, a.development)
-        return self
+    def select(self, item=None):
+        if item:
+            return self[item]
+        else:
+            return self.contents
 
 
     # Treat a Configuration as a dictionary like object.
@@ -114,31 +138,30 @@ class Configuration(yaml.YAMLObject):
         :return: database object with name item, relies of properties to get it right.
         :rtype: Database
         """
-        return self.__getattribute__(item)
+        return self.contents[item]
 
     def __iter__(self):
         """
         Usage: c['name'] => Database. Assumes all property names start with '_' (which is brittle).
         :return:
         """
-        for k in self.__dict__.keys():
-            yield k[1:]
+        for k,v in self.contents.items():
+            yield v
         raise StopIteration()
 
     # pyyaml says we need this.
     def __repr__(self, *args, **kwargs):
-         return "%s(production=%r, development=%r)" % (
-             self.__class__.__name__, self.production, self.development)
+        return self.__class__.__name__ + '(' + ','.join(['{}=%r'.format(k) for k in self.content.keys() ]) +')'
 
 
     # getters
-    @property
-    def production(self):
-        return self._production
-
-    @property
-    def development(self):
-        return self._development
+    # @property
+    # def production(self):
+    #     return self._production
+    #
+    # @property
+    # def development(self):
+    #     return self._development
 
 
 
@@ -151,7 +174,7 @@ def make_constructor(cls):
         return cls(**fields)
     return constructor
 
-for cls in [Configuration, Database]:
+for cls in [Configurations, Database]:
     tag = '!' + __name__ +'.' + cls.__name__
     yaml.add_constructor(tag, make_constructor(cls))
 
