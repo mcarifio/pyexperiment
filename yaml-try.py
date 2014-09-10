@@ -17,11 +17,13 @@ if '__main__' == __name__:
     !config.Configuration
     production:
         !config.Database
+        title: "Production"
         read_write: "mysql://username@password:host/database1"
         read_only: "mysql://username@password:host/database1"
 
     development:
         !config.Database
+        title: "Development"
         read_write: "mysql://username@password:host:999/database"
     """)
 

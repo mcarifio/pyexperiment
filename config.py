@@ -14,7 +14,7 @@ class Database(yaml.YAMLObject):
     read_write is a read/write database, read_only is its read_only variant.
     """
 
-    def __init__(self, read_write=None, read_only=None):
+    def __init__(self, read_write=None, read_only=None, **kwargs):
         """
         Usage: db = config.Database(read_write='mysql://username:password@hostname/database', read_only='mysql://username:password@hostname/database')
         Can be overridden by environment variables MYSQL_READ_WRITE and MYSQL_READ_ONLY
@@ -76,7 +76,7 @@ class Configuration(yaml.YAMLObject):
     e.g. !config.Configuration or it can be constructed from an attrdict.AttrDict. See conf_yaml.py for example usage.
     """
 
-    def __init__(self, production=None, development=None):
+    def __init__(self, production=None, development=None, **kwargs):
         """
         Usage: c = config.Configuration(production=config.Database(...))
         :param production:
