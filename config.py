@@ -29,7 +29,7 @@ def attrdict_from_yaml_string(s):
     return yaml.load(s)
 
 
-class Database(yaml.YAMLObject):
+class DatabaseTBS(yaml.YAMLObject):
     """
     Database represents a pair of database connection strings in SQLAlchemy format, i.e. 'mysql://username:password@hostname/database'.
     read_write is a read/write database, read_only is its read_only variant.
@@ -174,7 +174,7 @@ def make_constructor(cls):
         return cls(**fields)
     return constructor
 
-for cls in [Configurations, Database]:
+for cls in [Configurations]: # Remove Database for now
     tag = '!' + __name__ +'.' + cls.__name__
     yaml.add_constructor(tag, make_constructor(cls))
 

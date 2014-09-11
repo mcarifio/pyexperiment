@@ -35,8 +35,8 @@ if '__main__' == __name__:
 
     # the "top" level attributes in the Configuration are considered its "keys", i.e. 'production' and 'development'
     # TODO: pycharm completes these names?
-    for k in c:
-        print(k, c[k].database, c[k].database.read_write)
+    for item in c:
+        print(item, item.database, item.database.read_write)
 
     # and finally
     env = os.environ.get("APP_ENV", "development")
