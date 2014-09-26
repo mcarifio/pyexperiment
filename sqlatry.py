@@ -19,6 +19,7 @@ import sqlalchemy
 import mysql.connector
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base() # magic
+import sqlalchemy.orm
 
 
 sqlite = 'sqlite:///:memory:'
@@ -26,7 +27,7 @@ mysql = 'mysql+mysqlconnector://mcarifio:123456@localhost/sqla'
 
 engines = []
 for c in [sqlite, mysql]:
-    engine = sqlalchemy.create_engine(mysql, echo=True)
+    engine = sqlalchemy.create_engine(c, echo=True)
     logger.debug(engine)
     engines.append(engine)
 
@@ -69,7 +70,7 @@ class Merchant(Base):
     # def __new__(cls, *args, **kwargs):
     #     cls.__tablename__ = cls.__name__
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(128))
 
     def __repr__(self):
@@ -80,3 +81,17 @@ class Merchant(Base):
 
 for engine in engines:
     Base.metadata.create_all(engine) # is this persistent?
+
+merchants = [Merchant(name=m) for m in ['m%d' % (i) for i in range(5)]]
+
+sessions = [(sqlalchemy.orm.sessionmaker(bind=engine))() for engine in engines]
+# for s in sessions:
+#     s.add_all(merchants)
+#     s.commit()
+
+
+sessions[1].add_all(merchants)
+sessions[1].commit()
+
+for m in merchants: print(m)
+
